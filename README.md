@@ -32,7 +32,7 @@
 
 ## *Project Overview*
 
-- We use standard PCA and Gaussian Kernel PCA
+- We use standard PCA and Gaussian kernel PCA
 - We extract the 9 most significant features from the training data and record the eigenvectors
 - For standard PCA, only the eigenvectors are needed to extract features from testing data
 - For Gaussian kPCA, both eigenvectors and training data are needed to extract features from the testing data
@@ -45,7 +45,7 @@
 - The $i$-th vector is the direction of a line that best fits the data while being orthogonal to the first $i-1$ vectors
 - A best-fitting line is defined as one that minimizes the average squared distance from the points to the line
 - These directions form an orthonormal basis in which different individual dimensions are linearly uncorrelated
-- **PCA** is the process of computing and using the principal components to perform change of basis on the data
+- ***PCA*** is the process of computing and using the principal components to perform change of basis on the data
 
 ### Process
 
@@ -56,7 +56,7 @@
 
 ## *Kernel PCA*
 
-- In the field of multivariate statistics, **kernel PCA** is an extension of PCA
+- In the field of multivariate statistics, ***kernel PCA*** is an extension of PCA
 - It allows for the separability of non-linear data by making use of kernels
 - The basic idea behind it is to project the linearly inseparable data onto a lower dimensional space
 - There, the new data becomes linearly separable
