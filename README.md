@@ -18,7 +18,7 @@
 
 - In this project, we replicate the example 3.2.2 of the following paper
 
-> ***Kernel Principal Component Analysis and its Applications in Face Recognition and Active Shape Models***  
+> ***[Kernel Principal Component Analysis and its Applications in Face Recognition and Active Shape Models](https://github.com/sapaladas/image_feature_extraction_via_pca_kpca/blob/main/kernel_principal_component_analysis.pdf)***  
 > *Quan Wang, Rensselaer Polytechnic Institute, 110 Eighth Street, Troy, NY 12180 USA*  
 > *arXiv:1207.3538 \[cs.CV\], 2012*
 
@@ -35,19 +35,19 @@
 - We use standard PCA and Gaussian Kernel PCA
 - We extract the 9 most significant features from the training data and record the eigenvectors
 - For standard PCA, only the eigenvectors are needed to extract features from testing data
-- For Gaussian kernel PCA, both the eigenvectors and the training data are needed to extract features from testing data
+- For Gaussian kPCA, both the eigenvectors and the training data are needed to extract features from testing data
 - In addition, for kernel PCA, we use a Gaussian kernel with $\sigma = 22546$
 - For classification of the images, we use the simplest linear classifier
 
 ## *Standard PCA*
 
-- The **principal components** of a collection of poins in a real coordinate space are a sequence of $p$ unit vectors
+- The ***principal components*** of a collection of poins in a real coordinate space are a sequence of $p$ unit vectors
 - The $i$-th vector is the direction of a line that best fits the data while being orthogonal to the first $i-1$ vectors
 - A best-fitting line is defined as one that minimizes the average squared distance from the points to the line
-- These directions constitute an orthonormal basis in which different individual dimensions are linearly uncorrelated
-- **PCA** is the process of computing the principal components and using them to perform change of basis on the data
+- These directions form an orthonormal basis in which different individual dimensions are linearly uncorrelated
+- **PCA** is the process of computing and using the principal components to perform change of basis on the data
 
-#### Process
+### Process
 
 1. Initialize a PCA instance 
 2. Fit the PCA instance in the training data
@@ -61,11 +61,11 @@
 - The basic idea behind it is to project the linearly inseparable data onto a lower dimensional space
 - There, the new data becomes linearly separable
 
-#### Process
+### Process
 
 1. Compute the hyperparameter $\sigma$
-2. Use Gaussian Kernel PCA to project the training data onto a lower dimensional space and record the eigenvectors
-3. Use Gaussian Kernel PCA and the eigenvectors obtained to project the testing data onto a lower dimensional space
+2. Use Gaussian kPCA to project the training data onto a lower dimensional space and record the eigenvectors
+3. Use Gaussian kPCA and the eigenvectors obtained to project the testing data onto a lower dimensional space
 
 *Compute the hyperparameter* $\sigma$
 
