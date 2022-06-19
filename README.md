@@ -35,7 +35,7 @@
 - We use standard PCA and Gaussian Kernel PCA
 - We extract the 9 most significant features from the training data and record the eigenvectors
 - For standard PCA, only the eigenvectors are needed to extract features from testing data
-- For Gaussian kPCA, both the eigenvectors and the training data are needed to extract features from testing data
+- For Gaussian kPCA, both eigenvectors and training data are needed to extract features from the testing data
 - In addition, for kernel PCA, we use a Gaussian kernel with $\sigma = 22546$
 - For classification of the images, we use the simplest linear classifier
 
