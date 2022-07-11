@@ -73,6 +73,40 @@
 - For each data point, find the distance from its nearest neighbor
 - Calculate the average of all smallest distances
 - Compute  $\sigma $ using the formula  $\sigma = 5 \times mean(d_{i}^{NN}) $
+- Below you can find the function used to compute $\sigma$
+
+```
+def compute_sigma(x):
+    """
+    Hyperparameter σ
+    ________________
+    :param x: the input data matrix, each row is one observation (M), each column is one feature (N)
+    :return: the σ parameter
+    ================
+    step1: calculate the pairwise distances between all data points of the input matrix
+    step2: find the distance, be it di^NN, of each data point xi from its nearest neighbor
+    step3: calculate the mean of the smallest distances
+    step4: compute σ, σ = 5 x mean(di^NN)
+    """
+    
+    # calculate pairwise distances
+    distances = pairwise_distances(x)
+    distances = np.where(distances == 0, np.inf, distances)
+    
+    # find the distance of each data point from its nearest neighbor
+    min_distances = [min(dist) for dist in distances]
+    
+    # calculate the avg smallest distance
+    mean_distance = np.mean(min_distances)
+    
+    # compute sigma
+    sigma = 5 * mean_distance
+    
+    return sigma, print(f'σ = {int(sigma)}')
+
+# execute function
+sigma, _ = compute_sigma(x_train)
+```
 
 *Project the training data onto a lower dimensional space and record the eigenvectors*
 
@@ -83,11 +117,128 @@
 - Normalize the eigenvectors
 - Get the k largest eigenvectors to become the principal components
 - Project the input data onto a lower dimensional space using the k principal components
+- Below you can find the function used to project the training data onto a lower dimensional space
+
+```
+def kPCA(x, sigma, n_components=9):
+    """
+    Kernel PCA algorithm
+    ____________________
+    :param x: the input data matrix, each row is one observation (M), each column is one feature (N)
+    :param sigma: the hyperparameter σ
+    :param n_components: the number of principal components to keep
+    :return x_train_kPCA: the projection of the input data onto a lower dimensional space
+    :return eigenvectors: the principal [n_components] components
+    ====================
+    step1: construct the kernel matrix K0
+    step2: compute the gram matrix (aka center the kernel matrix) $K=K0-1_NK0-K01_N+1_NK01_N$
+    step3: compute the eigenvalues and the eigenvectors of $K^C$
+    step4: normalize the eigenvectors
+    step5: get the k first largest eigenvectors to become principal components
+    step6: project the input data onto a lower dimensional space
+    """
+    
+    def rbf_kernel(x, sigma):
+        """
+        Gaussian rbf kernel
+        ___________________
+        :param x: the input data matrix, each row is one observation (M), each column is one feature (N)
+        :param sigma: the hyperparameter σ
+        :return: the rbf kernel, $e^{-||x-y||^2/2*sigma^2}$
+        ===================
+        step1: calculate the squared euclidean distance for every pair of points in the MxN dimensional dataset
+        step2: convert the pairwise distances into a symmetric MxM matrix
+        step3: compute the MxM kernel matrix
+        """
+        D = pdist(x,'sqeuclidean')
+        D = squareform(D)
+        D = np.where(D<0,0,D)
+        K = np.sqrt(D)
+        K = K**2
+        K = np.exp(-K/(2*sigma**2))
+        return K
+    
+    # construct the kernel matrix
+    K0 = rbf_kernel(x, sigma)
+    
+    # compute the gram matrix
+    N = x.shape[0]
+    oneN = np.ones((N,N))/N
+    K = K0 - np.dot(oneN,K0) - np.dot(K0,oneN) + np.dot(np.dot(oneN,K0),oneN)
+    
+    # eigenvalue analysis
+    eigenvalues, eigenvectors = np.linalg.eigh(K)
+    
+    # normalization
+    norm_eigenvectors = np.sqrt(sum(eigenvectors**2))
+    eigenvectors = eigenvectors / np.tile(norm_eigenvectors, (eigenvectors.shape[0], 1))
+    
+    # dimensionality reduction
+    kLargestIdx = np.argsort(eigenvalues)[::-1][:n_components]
+    eigenvectors = eigenvectors[:,kLargestIdx]
+    x_train_kPCA = np.dot(K0,eigenvectors)
+    
+    return x_train_kPCA, eigenvectors
+
+# execute function
+x_train_kPCA, eigenvectors = kPCA(x_train, sigma)
+```
 
 *Project the testing data onto a lower dimensional space*
 
 - Construct the kernel matrix using the formula $K = exp(-\| x - y \|^{2} / 2 \sigma^{2})$
 - Project the testing data onto a lower dimensional space using the kernel matrix and the k largest eigenvectors
+- Below you can find the function used to project the testing data onto a lower dimensional space
+
+```
+def kPCA_newData(x_train, x_test, eigenvectors, sigma):
+    """
+    Kernel PCA algorithm for unseen data
+    ____________________________________
+    :param x_train: the input train data matrix, each row is one observation (M), each column is one feature (N)
+    :param x_test: the input unseen data matrix, each row is one observation (M), each column is one feature (N)
+    :param eigVector: the eigenvectors obtained from the previous step
+    :param sigma: the hyperparameter σ
+    :return x_test_kPCA: the projection of the input unseen data onto a lower dimensional space
+    ====================================
+    step1: construct the kernel matrix K 
+    step2: compute the projection of the input data onto a lower dimensional space
+    """
+    
+    def rbf_kernel_newData(x_train, x_test, sigma):
+        """
+        Gaussian rbf kernel
+        ___________________
+        :param x_train: the input train data matrix, each row is one observation (M), each column is one feature (N)
+        :param x_test: the input unseen data matrix, each row is one observation (M), each column is one feature (N)
+        :param sigma: the hyperparameter σ
+        :return: the rbf kernel, $e^{-||x-y||^2/2*sigma^2}$
+        ===================
+        step1: calculate the squared euclidean distance for every pair of points in the MxN dimensional dataset
+        step2: convert the pairwise distances into a symmetric MxM matrix
+        step3: compute the MxM kernel matrix
+        """
+        D = pdist(np.concatenate([x_train,x_test]), 'sqeuclidean')
+        D = squareform(D)
+        D = np.where(D<0,0,D)
+        K = np.sqrt(D)
+        N = x_train.shape[0]
+        K = K[N:,:N]
+        K = K**2
+        K = np.exp(-K/(2*sigma**2))
+        return K
+    
+    # construct the kernel matrix
+    K = rbf_kernel_newData(x_train, x_test, sigma)
+    
+    # dimensionality reduction
+    x_test_kPCA = np.dot(K,eigenvectors)
+    
+    return x_test_kPCA
+
+# execute function
+x_test_kPCA = kPCA_newData(x_train, x_test, eigenvectors, sigma)
+```
 
 ## *Classification Results*
 
