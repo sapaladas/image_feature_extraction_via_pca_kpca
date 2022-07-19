@@ -75,7 +75,7 @@
 - Compute  $\sigma $ using the formula  $\sigma = 5 \times mean(d_{i}^{NN}) $
 - Below you can find the function used to compute $\sigma$
 
-```
+``` python
 def compute_sigma(x):
     """
     Hyperparameter σ
@@ -119,7 +119,7 @@ sigma, _ = compute_sigma(x_train)
 - Project the input data onto a lower dimensional space using the k principal components
 - Below you can find the function used to project the training data onto a lower dimensional space
 
-```
+``` python
 def kPCA(x, sigma, n_components=9):
     """
     Kernel PCA algorithm
@@ -190,7 +190,7 @@ x_train_kPCA, eigenvectors = kPCA(x_train, sigma)
 - Project the testing data onto a lower dimensional space using the kernel matrix and the k largest eigenvectors
 - Below you can find the function used to project the testing data onto a lower dimensional space
 
-```
+``` python
 def kPCA_newData(x_train, x_test, eigenvectors, sigma):
     """
     Kernel PCA algorithm for unseen data
